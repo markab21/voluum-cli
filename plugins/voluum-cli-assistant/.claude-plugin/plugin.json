@@ -1,0 +1,10 @@
+{
+  "name": "voluum-cli-assistant",
+  "description": "Community-supported skills for installing and using voluum-cli. Unofficial and not supported by Voluum.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "markab21"
+  },
+  "keywords": ["voluum", "cli", "community", "reports", "setup"]
+}

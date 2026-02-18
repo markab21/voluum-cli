@@ -1,0 +1,24 @@
+{
+  "name": "voluum-community-tools",
+  "owner": {
+    "name": "markab21"
+  },
+  "metadata": {
+    "description": "Community marketplace for voluum-cli helper plugins (unofficial, MIT).",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "voluum-cli-assistant",
+      "source": "./plugins/voluum-cli-assistant",
+      "description": "Community plugin with setup/install and command composition skills for voluum-cli.",
+      "version": "1.0.0",
+      "license": "MIT",
+      "author": {
+        "name": "markab21"
+      },
+      "tags": ["voluum", "cli", "reports", "setup", "agent"]
+    }
+  ]
+}
