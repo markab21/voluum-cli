@@ -41,13 +41,23 @@ async function renderHelp(args: string[]): Promise<string> {
 }
 
 describe("reports command help output", () => {
+  test("includes predefined breakdown presets and examples", async () => {
+    const output = await renderHelp(["reports", "breakdown", "--help"]);
+
+    expect(output).toContain("Breakdown preset");
+    expect(output).toContain("offer | offer-by-campaign | flow | traffic-source | lander");
+    expect(output).toContain("voluum reports breakdown --by offer");
+    expect(output).toContain("voluum reports breakdown --by offer-by-campaign");
+    expect(output).toContain("--campaignId <id>");
+  });
+
   test("includes advanced examples and precedence guidance for reports query", async () => {
     const output = await renderHelp(["reports", "query", "--help"]);
 
     expect(output).toContain("Examples:");
     expect(output).toContain("voluum reports query --path /report/conversions");
-    expect(output).toContain("--query from=2026-02-01,to=2026-02-18,limit=100,offset=100,sort=visits:desc");
-    expect(output).toContain("--query-json '{\"limit\":25,\"offset\":50,\"sort\":\"visits:asc\"}'");
+    expect(output).toContain("--query from=2026-02-01,to=2026-02-18,limit=100,offset=100,sort=visits,direction=desc");
+    expect(output).toContain("--query-json '{\"limit\":25,\"offset\":50,\"sort\":\"visits\",\"direction\":\"asc\"}'");
     expect(output).toContain("--query-json overrides duplicate keys from --query.");
   });
 

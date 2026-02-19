@@ -10,6 +10,7 @@ import { failure } from "../output/shapes.js";
 export interface GlobalCommandOptions {
   baseUrl?: string;
   token?: string;
+  json?: boolean;
   pretty?: boolean;
   silent?: boolean;
   out?: string;
@@ -49,6 +50,7 @@ export function getGlobalOptions(command: Command): GlobalCommandOptions {
   return {
     baseUrl: cleanString(raw.baseUrl),
     token: cleanString(raw.token),
+    json: Boolean(raw.json),
     pretty: Boolean(raw.pretty),
     silent: Boolean(raw.silent),
     out: cleanString(raw.out),
@@ -58,6 +60,7 @@ export function getGlobalOptions(command: Command): GlobalCommandOptions {
 export function getPrintOptions(command: Command): PrintOptions {
   const options = getGlobalOptions(command);
   return {
+    json: options.json || options.pretty,
     pretty: options.pretty,
     silent: options.silent,
     outputFile: options.out,
