@@ -118,6 +118,23 @@ voluum reports schema \
   --type money
 ```
 
+Predefined breakdowns:
+
+```bash
+# By offer
+voluum reports breakdown \
+  --by offer \
+  --from 2026-02-11T22:00:00.000Z \
+  --to 2026-02-18T22:00:00.000Z
+
+# Offer performance in campaign context
+voluum reports breakdown \
+  --by offer-by-campaign \
+  --campaignId <campaign-id> \
+  --from 2026-02-11T22:00:00.000Z \
+  --to 2026-02-18T22:00:00.000Z
+```
+
 ### Generic API passthrough
 
 GET:
@@ -153,6 +170,7 @@ Detailed docs:
 
 - `docs/public/plugin-marketplace.md`
 - `docs/public/plugin-install.md`
+- `docs/public/voluum-api-notes.md`
 
 ## Configuration
 
@@ -179,6 +197,14 @@ The CLI attempts to persist config with file mode `0600` on Unix-like systems.
 ## Endpoint mapping
 
 Edit `src/endpoints.ts` to adjust routes, auth header name, and token extraction fields.
+
+## Live API Notes
+
+These were validated against a real Voluum account:
+
+- `from`/`to` must be rounded to the nearest hour (`HH:00:00Z`), otherwise Voluum returns `400 BAD_REQUEST`.
+- Use `--query-json` when any value contains commas (for example `columns` lists), because `--query` parses comma-separated `k=v` pairs.
+- For large accounts, small `limit` values can produce partial views; raise `limit` for full-window analysis before ranking campaigns.
 
 ## Development
 
