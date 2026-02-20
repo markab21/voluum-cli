@@ -2,6 +2,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Command } from "commander";
 import { registerLanderCommands } from "../../src/commands/landers.js";
+import { writeFile, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 interface TestServer {
   baseUrl: string;
@@ -72,6 +75,7 @@ function buildProgram(): Command {
 
 describe("landers commands", () => {
   let server: TestServer;
+  let tempDir: string;
 
   beforeEach(async () => {
     server = await startTestServer((_request, response) => {
@@ -79,10 +83,13 @@ describe("landers commands", () => {
       response.setHeader("content-type", "application/json");
       response.end(JSON.stringify({ id: "test-id", name: "Test Lander" }));
     });
+    tempDir = join(tmpdir(), `voluum-test-${Date.now()}`);
+    await mkdir(tempDir, { recursive: true });
   });
 
   afterEach(async () => {
     await server.close();
+    await rm(tempDir, { recursive: true, force: true });
   });
 
   test("list calls GET /lander", async () => {
@@ -130,6 +137,26 @@ describe("landers commands", () => {
     expect(server.requests[0]?.method).toBe("POST");
     expect(server.requests[0]?.url).toBe("/lander");
     expect(server.requests[0]?.body).toEqual({ name: "New Lander", url: "https://example.com" });
+  });
+
+  test("create calls POST /lander with body from --file", async () => {
+    const dataFile = join(tempDir, "lander.json");
+    await writeFile(dataFile, JSON.stringify({ name: "File Lander", url: "https://file.com" }));
+
+    const program = buildProgram();
+    await program.parseAsync([
+      "node", "voluum",
+      "--baseUrl", server.baseUrl,
+      "--token", "test-token",
+      "--silent",
+      "landers", "create",
+      "--file", dataFile,
+    ]);
+
+    expect(server.requests).toHaveLength(1);
+    expect(server.requests[0]?.method).toBe("POST");
+    expect(server.requests[0]?.url).toBe("/lander");
+    expect(server.requests[0]?.body).toEqual({ name: "File Lander", url: "https://file.com" });
   });
 
   test("update calls PUT /lander/{id} with body", async () => {
