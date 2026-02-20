@@ -236,7 +236,6 @@ voluum api get /traffic-source
 
 ## Notes from production use
 
-- High **suspicious visit** percentages (50–90%) are common depending on traffic source mix; check your traffic source quality settings before alarming.
 - Filters like `trafficSourceId=<id>` in the query are accepted but may be silently ignored
   by some report endpoints — verify by checking if `totalRows` changes.
 - The `columns=...` param is accepted but Voluum returns all fields anyway; it's cosmetic.
