@@ -1,5 +1,11 @@
 ---
+name: voluum-setup-install
 description: Install and configure voluum-cli on Linux/macOS, with Windows support via WSL.
+license: MIT
+compatibility: Requires git and Bun runtime. Network access to https://api.voluum.com.
+metadata:
+  author: markab21
+  tags: voluum, install, setup, cli
 ---
 
 `voluum-cli` is community-supported software released under the MIT License. It is not an official Voluum product and is not endorsed or supported by Voluum. It uses publicly documented Voluum APIs.

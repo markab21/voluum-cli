@@ -1,5 +1,11 @@
 ---
+name: voluum-command-composer
 description: Compose safe, copy/paste-ready voluum-cli commands from user intent using public API workflows.
+license: MIT
+compatibility: Requires voluum-cli installed and authenticated (run voluum auth login or set VOLUUM_TOKEN).
+metadata:
+  author: markab21
+  tags: voluum, reporting, advertising, cli
 ---
 
 `voluum-cli` is community-supported software released under the MIT License. It is not an official Voluum product and is not endorsed or supported by Voluum. It uses publicly documented Voluum APIs.
