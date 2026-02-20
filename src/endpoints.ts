@@ -11,10 +11,55 @@ export const ENDPOINTS = {
   campaigns: {
     listPath: "/campaign",
     getPath: (id: string) => `/campaign/${encodeURIComponent(id)}`,
+    createPath: "/campaign",
+    updatePath: (id: string) => `/campaign/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/campaign/${encodeURIComponent(id)}`,
   },
   reports: {
     summaryPath: "/report",
     rawPath: "/report/conversions",
+  },
+  offers: {
+    listPath: "/offer",
+    getPath: (id: string) => `/offer/${encodeURIComponent(id)}`,
+    createPath: "/offer",
+    updatePath: (id: string) => `/offer/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/offer/${encodeURIComponent(id)}`,
+  },
+  landers: {
+    listPath: "/lander",
+    getPath: (id: string) => `/lander/${encodeURIComponent(id)}`,
+    createPath: "/lander",
+    updatePath: (id: string) => `/lander/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/lander/${encodeURIComponent(id)}`,
+  },
+  flows: {
+    listPath: "/flow",
+    getPath: (id: string) => `/flow/${encodeURIComponent(id)}`,
+    createPath: "/flow",
+    updatePath: (id: string) => `/flow/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/flow/${encodeURIComponent(id)}`,
+  },
+  trafficSources: {
+    listPath: "/traffic-source",
+    getPath: (id: string) => `/traffic-source/${encodeURIComponent(id)}`,
+    createPath: "/traffic-source",
+    updatePath: (id: string) => `/traffic-source/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/traffic-source/${encodeURIComponent(id)}`,
+  },
+  affiliateNetworks: {
+    listPath: "/affiliate-network",
+    getPath: (id: string) => `/affiliate-network/${encodeURIComponent(id)}`,
+    createPath: "/affiliate-network",
+    updatePath: (id: string) => `/affiliate-network/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/affiliate-network/${encodeURIComponent(id)}`,
+  },
+  trackerDomains: {
+    listPath: "/tracker-domain",
+    getPath: (id: string) => `/tracker-domain/${encodeURIComponent(id)}`,
+    createPath: "/tracker-domain",
+    updatePath: (id: string) => `/tracker-domain/${encodeURIComponent(id)}`,
+    deletePath: (id: string) => `/tracker-domain/${encodeURIComponent(id)}`,
   },
 } as const;
 
