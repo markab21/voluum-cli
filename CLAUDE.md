@@ -23,9 +23,62 @@ This repository hosts `voluum-cli`, a community-supported MIT-licensed CLI wrapp
 
 ### Entry Point & Command Structure
 
-`src/index.ts` sets up a Commander.js program with global options (`--baseUrl`, `--token`, `--json`, `--pretty`, `--silent`, `--out`) and registers command groups: `auth`, `campaigns`, `reports`, `api`.
+`src/index.ts` sets up a Commander.js program with global options (`--baseUrl`, `--token`, `--json`, `--pretty`, `--silent`, `--out`) and registers command groups:
+
+- `auth` — Authentication (login, whoami, logout)
+- `campaigns` — Full CRUD for campaigns
+- `offers` — Full CRUD for offers
+- `landers` — Full CRUD for landers
+- `flows` — Full CRUD for flows
+- `traffic-sources` — Full CRUD for traffic sources
+- `affiliate-networks` — Full CRUD for affiliate networks
+- `tracker-domains` — Full CRUD for tracker domains
+- `reports` — Reporting operations (breakdown, query, schema, summary, raw)
+- `api` — Generic API passthrough (get, post)
 
 Each command group lives in `src/commands/`. All commands build a **CommandContext** via `createCommandContext()` in `src/commands/helpers.ts` — this resolves global options, loads file config, applies the env/CLI/file precedence chain, and returns an authenticated `VoluumClient` instance ready to use.
+
+### CRUD Resource Commands
+
+Seven resource types implement a standardized full CRUD pattern: `campaigns`, `offers`, `landers`, `flows`, `traffic-sources`, `affiliate-networks`, `tracker-domains`.
+
+Each resource exposes 5 subcommands:
+
+- `list` — GET collection (no required options)
+- `get --id <id>` — GET single resource by ID
+- `create --data <json> | --file <path>` — POST new resource with JSON body
+- `update --id <id> --data <json> | --file <path>` — PUT existing resource with JSON body
+- `delete --id <id>` — DELETE resource by ID
+
+**Implementation pattern** (consistent across all 7 resources):
+
+1. Call `createCommandContext(command)` to get authenticated client
+2. Call `requireToken(context.token)` to ensure authentication
+3. For create/update: call `resolveDataInput(options.data, options.file)` to parse JSON body
+4. Make typed HTTP call via `context.client.{get|post|put|delete}<T>(ENDPOINTS.{resource}.{path})`
+5. Wrap response in `success({ resource: response })` shape
+6. Output via `printJson(..., getPrintOptions(command))`
+7. Catch errors and route to `printFailure(command, error)`
+
+**Endpoint mapping:** All CRUD commands use the central `ENDPOINTS` object in `src/endpoints.ts`:
+
+- `{resource}.listPath` — collection path string
+- `{resource}.getPath(id)` — single resource path function
+- `{resource}.createPath` — creation path string
+- `{resource}.updatePath(id)` — update path function
+- `{resource}.deletePath(id)` — deletion path function
+
+### Data Input Helpers
+
+`src/commands/helpers.ts` provides two helpers for JSON body handling in create/update commands:
+
+- **`readDataFile(filePath: string): Promise<unknown>`** — Reads a file and parses as JSON. Throws with a clear error message if the file doesn't exist or contains invalid JSON.
+
+- **`resolveDataInput(dataOption, fileOption): Promise<unknown>`** — Validates and resolves `--data` vs `--file` options:
+  - Throws if both are provided ("Use either --data or --file, not both.")
+  - Throws if neither is provided ("Either --data or --file is required.")
+  - If `--file`, delegates to `readDataFile()`
+  - If `--data`, parses inline JSON string via `parseJsonBody()`
 
 ### Config & Auth
 
@@ -42,7 +95,7 @@ Config is stored at `~/.voluum-cli/config.json` (mode 0600). Precedence: CLI fla
 - `schema.ts` — extracts and filters column metadata from report schema responses
 - `mapping.ts` — normalizes Voluum column types to generic types (`text`, `integer`, `money`, `percentage`, `boolean`, `duration_seconds`, `unknown`)
 
-The `reports breakdown` command uses preset query builders (offer, offer-by-campaign, flow, traffic-source, lander) that compose `--groupBy` and `--filters` for common use cases.
+The `reports breakdown` command supports preset values (`offer`, `offer-by-campaign`, `flow`, `traffic-source`, `lander`) that compose `--groupBy` and `--filters` for common reporting use cases. Custom queries can be built using `reports query` with full control over groupBy, filters, and columns.
 
 ### Output Shape
 

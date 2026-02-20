@@ -1,5 +1,7 @@
 # Full CRUD for 7 Core Resources Implementation Plan
 
+> **Status: COMPLETE** — Implemented 2026-02-20. All 11 tasks done, 64 tests passing, all commands verified in `--help`. Documentation updated.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Add full CRUD operations (list, get, create, update, delete) for offers, landers, flows, traffic-sources, affiliate-networks, tracker-domains, and extend campaigns with create/update/delete.
