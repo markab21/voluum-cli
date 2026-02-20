@@ -2,6 +2,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Command } from "commander";
 import { registerCampaignCommands } from "../../src/commands/campaigns.js";
+import { writeFile, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 interface TestServer {
   baseUrl: string;
@@ -69,8 +72,11 @@ function buildProgram(): Command {
 
 describe("campaigns commands", () => {
   let server: TestServer;
+  let tempDir: string;
 
   beforeEach(async () => {
+    tempDir = join(tmpdir(), `voluum-test-${Date.now()}`);
+    await mkdir(tempDir, { recursive: true });
     server = await startTestServer((_request, response) => {
       response.statusCode = 200;
       response.setHeader("content-type", "application/json");
@@ -80,6 +86,7 @@ describe("campaigns commands", () => {
 
   afterEach(async () => {
     await server.close();
+    await rm(tempDir, { recursive: true, force: true });
   });
 
   test("list calls GET /campaign", async () => {
@@ -127,6 +134,26 @@ describe("campaigns commands", () => {
     expect(server.requests[0]?.method).toBe("POST");
     expect(server.requests[0]?.url).toBe("/campaign");
     expect(server.requests[0]?.body).toEqual({ name: "New Campaign", trafficSourceId: "ts-1" });
+  });
+
+  test("create calls POST /campaign with body from --file", async () => {
+    const dataFile = join(tempDir, "campaign.json");
+    await writeFile(dataFile, JSON.stringify({ name: "File Campaign" }));
+
+    const program = buildProgram();
+    await program.parseAsync([
+      "node", "voluum",
+      "--baseUrl", server.baseUrl,
+      "--token", "test-token",
+      "--silent",
+      "campaigns", "create",
+      "--file", dataFile,
+    ]);
+
+    expect(server.requests).toHaveLength(1);
+    expect(server.requests[0]?.method).toBe("POST");
+    expect(server.requests[0]?.url).toBe("/campaign");
+    expect(server.requests[0]?.body).toEqual({ name: "File Campaign" });
   });
 
   test("update calls PUT /campaign/{id} with body", async () => {

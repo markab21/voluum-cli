@@ -2,6 +2,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Command } from "commander";
 import { registerTrafficSourceCommands } from "../../src/commands/traffic-sources.js";
+import { writeFile, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 interface TestServer {
   baseUrl: string;
@@ -69,8 +72,11 @@ function buildProgram(): Command {
 
 describe("traffic-sources commands", () => {
   let server: TestServer;
+  let tempDir: string;
 
   beforeEach(async () => {
+    tempDir = join(tmpdir(), `voluum-test-${Date.now()}`);
+    await mkdir(tempDir, { recursive: true });
     server = await startTestServer((_request, response) => {
       response.statusCode = 200;
       response.setHeader("content-type", "application/json");
@@ -80,6 +86,7 @@ describe("traffic-sources commands", () => {
 
   afterEach(async () => {
     await server.close();
+    await rm(tempDir, { recursive: true, force: true });
   });
 
   test("list calls GET /traffic-source", async () => {
@@ -127,6 +134,26 @@ describe("traffic-sources commands", () => {
     expect(server.requests[0]?.method).toBe("POST");
     expect(server.requests[0]?.url).toBe("/traffic-source");
     expect(server.requests[0]?.body).toEqual({ name: "New Traffic Source" });
+  });
+
+  test("create calls POST /traffic-source with body from --file", async () => {
+    const dataFile = join(tempDir, "traffic-source.json");
+    await writeFile(dataFile, JSON.stringify({ name: "File Traffic Source" }));
+
+    const program = buildProgram();
+    await program.parseAsync([
+      "node", "voluum",
+      "--baseUrl", server.baseUrl,
+      "--token", "test-token",
+      "--silent",
+      "traffic-sources", "create",
+      "--file", dataFile,
+    ]);
+
+    expect(server.requests).toHaveLength(1);
+    expect(server.requests[0]?.method).toBe("POST");
+    expect(server.requests[0]?.url).toBe("/traffic-source");
+    expect(server.requests[0]?.body).toEqual({ name: "File Traffic Source" });
   });
 
   test("update calls PUT /traffic-source/{id} with body", async () => {

@@ -2,6 +2,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Command } from "commander";
 import { registerAffiliateNetworkCommands } from "../../src/commands/affiliate-networks.js";
+import { writeFile, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 interface TestServer {
   baseUrl: string;
@@ -69,8 +72,11 @@ function buildProgram(): Command {
 
 describe("affiliate-networks commands", () => {
   let server: TestServer;
+  let tempDir: string;
 
   beforeEach(async () => {
+    tempDir = join(tmpdir(), `voluum-test-${Date.now()}`);
+    await mkdir(tempDir, { recursive: true });
     server = await startTestServer((_request, response) => {
       response.statusCode = 200;
       response.setHeader("content-type", "application/json");
@@ -80,6 +86,7 @@ describe("affiliate-networks commands", () => {
 
   afterEach(async () => {
     await server.close();
+    await rm(tempDir, { recursive: true, force: true });
   });
 
   test("list calls GET /affiliate-network", async () => {
@@ -127,6 +134,26 @@ describe("affiliate-networks commands", () => {
     expect(server.requests[0]?.method).toBe("POST");
     expect(server.requests[0]?.url).toBe("/affiliate-network");
     expect(server.requests[0]?.body).toEqual({ name: "New Affiliate Network" });
+  });
+
+  test("create calls POST /affiliate-network with body from --file", async () => {
+    const dataFile = join(tempDir, "network.json");
+    await writeFile(dataFile, JSON.stringify({ name: "File Network" }));
+
+    const program = buildProgram();
+    await program.parseAsync([
+      "node", "voluum",
+      "--baseUrl", server.baseUrl,
+      "--token", "test-token",
+      "--silent",
+      "affiliate-networks", "create",
+      "--file", dataFile,
+    ]);
+
+    expect(server.requests).toHaveLength(1);
+    expect(server.requests[0]?.method).toBe("POST");
+    expect(server.requests[0]?.url).toBe("/affiliate-network");
+    expect(server.requests[0]?.body).toEqual({ name: "File Network" });
   });
 
   test("update calls PUT /affiliate-network/{id} with body", async () => {

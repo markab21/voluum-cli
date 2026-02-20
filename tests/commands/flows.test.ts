@@ -2,6 +2,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Command } from "commander";
 import { registerFlowCommands } from "../../src/commands/flows.js";
+import { writeFile, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 interface TestServer {
   baseUrl: string;
@@ -69,8 +72,11 @@ function buildProgram(): Command {
 
 describe("flows commands", () => {
   let server: TestServer;
+  let tempDir: string;
 
   beforeEach(async () => {
+    tempDir = join(tmpdir(), `voluum-test-${Date.now()}`);
+    await mkdir(tempDir, { recursive: true });
     server = await startTestServer((_request, response) => {
       response.statusCode = 200;
       response.setHeader("content-type", "application/json");
@@ -80,6 +86,7 @@ describe("flows commands", () => {
 
   afterEach(async () => {
     await server.close();
+    await rm(tempDir, { recursive: true, force: true });
   });
 
   test("list calls GET /flow", async () => {
@@ -127,6 +134,26 @@ describe("flows commands", () => {
     expect(server.requests[0]?.method).toBe("POST");
     expect(server.requests[0]?.url).toBe("/flow");
     expect(server.requests[0]?.body).toEqual({ name: "New Flow" });
+  });
+
+  test("create calls POST /flow with body from --file", async () => {
+    const dataFile = join(tempDir, "flow.json");
+    await writeFile(dataFile, JSON.stringify({ name: "File Flow" }));
+
+    const program = buildProgram();
+    await program.parseAsync([
+      "node", "voluum",
+      "--baseUrl", server.baseUrl,
+      "--token", "test-token",
+      "--silent",
+      "flows", "create",
+      "--file", dataFile,
+    ]);
+
+    expect(server.requests).toHaveLength(1);
+    expect(server.requests[0]?.method).toBe("POST");
+    expect(server.requests[0]?.url).toBe("/flow");
+    expect(server.requests[0]?.body).toEqual({ name: "File Flow" });
   });
 
   test("update calls PUT /flow/{id} with body", async () => {
