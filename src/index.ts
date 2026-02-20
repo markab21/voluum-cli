@@ -19,7 +19,8 @@ async function main(): Promise<void> {
     .showHelpAfterError()
     .option("--baseUrl <url>", "Override Voluum API base URL")
     .option("--token <token>", "Override auth token for this command")
-    .option("--pretty", "Pretty-print JSON output")
+    .option("--json", "Output as JSON instead of TOON")
+    .option("--pretty", "Output as pretty-printed JSON (implies --json)")
     .option("--silent", "Suppress stdout output")
     .option("--out <file>", "Write JSON output to file");
 

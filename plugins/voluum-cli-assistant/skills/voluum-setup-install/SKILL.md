@@ -28,7 +28,7 @@ bun run build
 Optional global CLI link:
 
 ```bash
-npm link
+bun link
 voluum --help
 ```
 
@@ -43,7 +43,7 @@ node dist/index.js --help
 Login using Voluum access credentials:
 
 ```bash
-voluum auth login --accessId '<ACCESS_ID>' --accessKey '<ACCESS_KEY>'
+voluum auth login --accessKeyId '<ACCESS_KEY_ID>' --accessKey '<ACCESS_KEY>'
 ```
 
 Or use environment variables:
@@ -68,6 +68,6 @@ voluum reports query --path /report --query from=2026-02-17T00:00:00Z,to=2026-02
 ## Troubleshooting
 
 - `bun: command not found`: install Bun and restart shell.
-- `voluum: command not found`: rerun `npm link` or use `node dist/index.js`.
+- `voluum: command not found`: rerun `bun link` or use `node dist/index.js`.
 - `No auth token found`: run `voluum auth login` or set `VOLUUM_TOKEN`.
 - WSL users: run install/auth commands inside WSL shell, not PowerShell CMD.
