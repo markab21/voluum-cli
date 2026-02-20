@@ -39,3 +39,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # local agent/runtime metadata (not for public repo)
 .agents/
 .tmp/
+
+# git worktrees
+.worktrees/

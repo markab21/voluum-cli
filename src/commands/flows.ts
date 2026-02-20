@@ -25,34 +25,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function normalizeCampaignsResponse(payload: unknown): unknown {
+function normalizeFlowsResponse(payload: unknown): unknown {
   if (Array.isArray(payload)) {
     return payload;
   }
 
-  if (isRecord(payload) && Array.isArray(payload.campaigns)) {
-    return payload.campaigns;
+  if (isRecord(payload) && Array.isArray(payload.flows)) {
+    return payload.flows;
   }
 
   return payload;
 }
 
-export function registerCampaignCommands(program: Command): void {
-  const campaigns = program.command("campaigns").description("Campaign operations");
+export function registerFlowCommands(program: Command): void {
+  const flows = program.command("flows").description("Flow operations");
 
-  campaigns
+  flows
     .command("list")
-    .description("List campaigns")
+    .description("List all flows")
     .action(async function action(this: Command) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.get<unknown>(ENDPOINTS.campaigns.listPath);
+        const response = await context.client.get<unknown>(ENDPOINTS.flows.listPath);
         await printJson(
           success({
-            campaigns: normalizeCampaignsResponse(response),
+            flows: normalizeFlowsResponse(response),
           }),
           getPrintOptions(command),
         );
@@ -61,20 +61,20 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  flows
     .command("get")
-    .description("Get campaign by ID")
-    .requiredOption("--id <id>", "Campaign ID")
-    .action(async function action(this: Command, options: { id: string }) {
+    .description("Get flow by ID")
+    .requiredOption("--id <id>", "Flow ID")
+    .action(async function action(this: Command, options: IdOptions) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.get<unknown>(ENDPOINTS.campaigns.getPath(options.id));
+        const response = await context.client.get<unknown>(ENDPOINTS.flows.getPath(options.id));
         await printJson(
           success({
-            campaign: response,
+            flow: response,
           }),
           getPrintOptions(command),
         );
@@ -83,9 +83,9 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  flows
     .command("create")
-    .description("Create a new campaign")
+    .description("Create a new flow")
     .option("--data <json>", "JSON body string")
     .option("--file <path>", "Path to JSON file")
     .action(async function action(this: Command, options: DataOptions) {
@@ -95,10 +95,10 @@ export function registerCampaignCommands(program: Command): void {
         requireToken(context.token);
 
         const body = await resolveDataInput(options.data, options.file);
-        const response = await context.client.post<unknown>(ENDPOINTS.campaigns.createPath, body);
+        const response = await context.client.post<unknown>(ENDPOINTS.flows.createPath, body);
         await printJson(
           success({
-            campaign: response,
+            flow: response,
           }),
           getPrintOptions(command),
         );
@@ -107,10 +107,10 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  flows
     .command("update")
-    .description("Update an existing campaign")
-    .requiredOption("--id <id>", "Campaign ID")
+    .description("Update an existing flow")
+    .requiredOption("--id <id>", "Flow ID")
     .option("--data <json>", "JSON body string")
     .option("--file <path>", "Path to JSON file")
     .action(async function action(this: Command, options: IdDataOptions) {
@@ -120,10 +120,10 @@ export function registerCampaignCommands(program: Command): void {
         requireToken(context.token);
 
         const body = await resolveDataInput(options.data, options.file);
-        const response = await context.client.put<unknown>(ENDPOINTS.campaigns.updatePath(options.id), body);
+        const response = await context.client.put<unknown>(ENDPOINTS.flows.updatePath(options.id), body);
         await printJson(
           success({
-            campaign: response,
+            flow: response,
           }),
           getPrintOptions(command),
         );
@@ -132,17 +132,17 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  flows
     .command("delete")
-    .description("Delete a campaign")
-    .requiredOption("--id <id>", "Campaign ID")
+    .description("Delete a flow")
+    .requiredOption("--id <id>", "Flow ID")
     .action(async function action(this: Command, options: IdOptions) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.delete<unknown>(ENDPOINTS.campaigns.deletePath(options.id));
+        const response = await context.client.delete<unknown>(ENDPOINTS.flows.deletePath(options.id));
         await printJson(
           success({
             deleted: true,

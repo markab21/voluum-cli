@@ -68,6 +68,7 @@ Token storage path:
 ```bash
 voluum --help
 voluum reports --help
+voluum offers --help
 voluum reports query --path /report --query from=2026-02-17T00:00:00Z,to=2026-02-18T00:00:00Z,groupBy=campaign,limit=5 --pretty
 ```
 

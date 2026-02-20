@@ -68,6 +68,26 @@ Logout (clears local stored token):
 voluum auth logout
 ```
 
+### Data Input for Create and Update
+
+Create and update commands require a JSON body via one of:
+
+- `--data '<json>'` — inline JSON string
+- `--file <path>` — path to a JSON file (useful for complex or large payloads)
+
+These flags are mutually exclusive; exactly one is required.
+
+```bash
+# Inline JSON
+voluum offers create --data '{"name":"My Offer","url":"https://example.com/offer"}'
+
+# From file
+voluum offers create --file ./offer.json
+
+# Update requires both --id and data
+voluum offers update --id <id> --file ./updated-offer.json
+```
+
 ### Campaigns
 
 List campaigns:
@@ -76,10 +96,234 @@ List campaigns:
 voluum campaigns list
 ```
 
-Get campaign by id:
+Get campaign by ID:
 
 ```bash
-voluum campaigns get --id 12345
+voluum campaigns get --id <id>
+```
+
+Create campaign:
+
+```bash
+voluum campaigns create --data '{"name":"My Campaign"}'
+voluum campaigns create --file ./campaign.json
+```
+
+Update campaign:
+
+```bash
+voluum campaigns update --id <id> --data '{"name":"Updated Name"}'
+voluum campaigns update --id <id> --file ./campaign.json
+```
+
+Delete campaign:
+
+```bash
+voluum campaigns delete --id <id>
+```
+
+### Offers
+
+List all offers:
+
+```bash
+voluum offers list
+```
+
+Get offer by ID:
+
+```bash
+voluum offers get --id <id>
+```
+
+Create offer:
+
+```bash
+voluum offers create --data '{"name":"My Offer","url":"https://example.com"}'
+voluum offers create --file ./offer.json
+```
+
+Update offer:
+
+```bash
+voluum offers update --id <id> --data '{"name":"Updated Offer"}'
+voluum offers update --id <id> --file ./offer.json
+```
+
+Delete offer:
+
+```bash
+voluum offers delete --id <id>
+```
+
+### Landers
+
+List all landers:
+
+```bash
+voluum landers list
+```
+
+Get lander by ID:
+
+```bash
+voluum landers get --id <id>
+```
+
+Create lander:
+
+```bash
+voluum landers create --data '{"name":"My Lander","url":"https://example.com/lp"}'
+voluum landers create --file ./lander.json
+```
+
+Update lander:
+
+```bash
+voluum landers update --id <id> --data '{"name":"Updated Lander"}'
+voluum landers update --id <id> --file ./lander.json
+```
+
+Delete lander:
+
+```bash
+voluum landers delete --id <id>
+```
+
+### Flows
+
+List all flows:
+
+```bash
+voluum flows list
+```
+
+Get flow by ID:
+
+```bash
+voluum flows get --id <id>
+```
+
+Create flow:
+
+```bash
+voluum flows create --data '{"name":"My Flow"}'
+voluum flows create --file ./flow.json
+```
+
+Update flow:
+
+```bash
+voluum flows update --id <id> --data '{"name":"Updated Flow"}'
+voluum flows update --id <id> --file ./flow.json
+```
+
+Delete flow:
+
+```bash
+voluum flows delete --id <id>
+```
+
+### Traffic Sources
+
+List all traffic sources:
+
+```bash
+voluum traffic-sources list
+```
+
+Get traffic source by ID:
+
+```bash
+voluum traffic-sources get --id <id>
+```
+
+Create traffic source:
+
+```bash
+voluum traffic-sources create --data '{"name":"My Traffic Source"}'
+voluum traffic-sources create --file ./traffic-source.json
+```
+
+Update traffic source:
+
+```bash
+voluum traffic-sources update --id <id> --data '{"name":"Updated Traffic Source"}'
+voluum traffic-sources update --id <id> --file ./traffic-source.json
+```
+
+Delete traffic source:
+
+```bash
+voluum traffic-sources delete --id <id>
+```
+
+### Affiliate Networks
+
+List all affiliate networks:
+
+```bash
+voluum affiliate-networks list
+```
+
+Get affiliate network by ID:
+
+```bash
+voluum affiliate-networks get --id <id>
+```
+
+Create affiliate network:
+
+```bash
+voluum affiliate-networks create --data '{"name":"My Network"}'
+voluum affiliate-networks create --file ./network.json
+```
+
+Update affiliate network:
+
+```bash
+voluum affiliate-networks update --id <id> --data '{"name":"Updated Network"}'
+voluum affiliate-networks update --id <id> --file ./network.json
+```
+
+Delete affiliate network:
+
+```bash
+voluum affiliate-networks delete --id <id>
+```
+
+### Tracker Domains
+
+List all tracker domains:
+
+```bash
+voluum tracker-domains list
+```
+
+Get tracker domain by ID:
+
+```bash
+voluum tracker-domains get --id <id>
+```
+
+Create tracker domain:
+
+```bash
+voluum tracker-domains create --data '{"domain":"track.example.com"}'
+voluum tracker-domains create --file ./domain.json
+```
+
+Update tracker domain:
+
+```bash
+voluum tracker-domains update --id <id> --data '{"domain":"new.example.com"}'
+voluum tracker-domains update --id <id> --file ./domain.json
+```
+
+Delete tracker domain:
+
+```bash
+voluum tracker-domains delete --id <id>
 ```
 
 ### Reports

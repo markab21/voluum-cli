@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { toCliError } from "./client/errors.js";
+import { registerAffiliateNetworkCommands } from "./commands/affiliate-networks.js";
 import { registerApiCommands } from "./commands/api.js";
 import { registerAuthCommands } from "./commands/auth.js";
 import { registerCampaignCommands } from "./commands/campaigns.js";
+import { registerFlowCommands } from "./commands/flows.js";
 import { getPrintOptions } from "./commands/helpers.js";
+import { registerLanderCommands } from "./commands/landers.js";
+import { registerOfferCommands } from "./commands/offers.js";
 import { registerReportCommands } from "./commands/reports.js";
+import { registerTrackerDomainCommands } from "./commands/tracker-domains.js";
+import { registerTrafficSourceCommands } from "./commands/traffic-sources.js";
 import { printJson } from "./output/print.js";
 import { failure } from "./output/shapes.js";
 
@@ -26,6 +32,12 @@ async function main(): Promise<void> {
 
   registerAuthCommands(program);
   registerCampaignCommands(program);
+  registerOfferCommands(program);
+  registerLanderCommands(program);
+  registerFlowCommands(program);
+  registerTrafficSourceCommands(program);
+  registerAffiliateNetworkCommands(program);
+  registerTrackerDomainCommands(program);
   registerReportCommands(program);
   registerApiCommands(program);
 

@@ -25,34 +25,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function normalizeCampaignsResponse(payload: unknown): unknown {
+function normalizeAffiliateNetworksResponse(payload: unknown): unknown {
   if (Array.isArray(payload)) {
     return payload;
   }
 
-  if (isRecord(payload) && Array.isArray(payload.campaigns)) {
-    return payload.campaigns;
+  if (isRecord(payload) && Array.isArray(payload.affiliateNetworks)) {
+    return payload.affiliateNetworks;
   }
 
   return payload;
 }
 
-export function registerCampaignCommands(program: Command): void {
-  const campaigns = program.command("campaigns").description("Campaign operations");
+export function registerAffiliateNetworkCommands(program: Command): void {
+  const affiliateNetworks = program.command("affiliate-networks").description("Affiliate network operations");
 
-  campaigns
+  affiliateNetworks
     .command("list")
-    .description("List campaigns")
+    .description("List all affiliate networks")
     .action(async function action(this: Command) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.get<unknown>(ENDPOINTS.campaigns.listPath);
+        const response = await context.client.get<unknown>(ENDPOINTS.affiliateNetworks.listPath);
         await printJson(
           success({
-            campaigns: normalizeCampaignsResponse(response),
+            affiliateNetworks: normalizeAffiliateNetworksResponse(response),
           }),
           getPrintOptions(command),
         );
@@ -61,20 +61,20 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  affiliateNetworks
     .command("get")
-    .description("Get campaign by ID")
-    .requiredOption("--id <id>", "Campaign ID")
-    .action(async function action(this: Command, options: { id: string }) {
+    .description("Get affiliate network by ID")
+    .requiredOption("--id <id>", "Affiliate network ID")
+    .action(async function action(this: Command, options: IdOptions) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.get<unknown>(ENDPOINTS.campaigns.getPath(options.id));
+        const response = await context.client.get<unknown>(ENDPOINTS.affiliateNetworks.getPath(options.id));
         await printJson(
           success({
-            campaign: response,
+            affiliateNetwork: response,
           }),
           getPrintOptions(command),
         );
@@ -83,9 +83,9 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  affiliateNetworks
     .command("create")
-    .description("Create a new campaign")
+    .description("Create a new affiliate network")
     .option("--data <json>", "JSON body string")
     .option("--file <path>", "Path to JSON file")
     .action(async function action(this: Command, options: DataOptions) {
@@ -95,10 +95,10 @@ export function registerCampaignCommands(program: Command): void {
         requireToken(context.token);
 
         const body = await resolveDataInput(options.data, options.file);
-        const response = await context.client.post<unknown>(ENDPOINTS.campaigns.createPath, body);
+        const response = await context.client.post<unknown>(ENDPOINTS.affiliateNetworks.createPath, body);
         await printJson(
           success({
-            campaign: response,
+            affiliateNetwork: response,
           }),
           getPrintOptions(command),
         );
@@ -107,10 +107,10 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  affiliateNetworks
     .command("update")
-    .description("Update an existing campaign")
-    .requiredOption("--id <id>", "Campaign ID")
+    .description("Update an existing affiliate network")
+    .requiredOption("--id <id>", "Affiliate network ID")
     .option("--data <json>", "JSON body string")
     .option("--file <path>", "Path to JSON file")
     .action(async function action(this: Command, options: IdDataOptions) {
@@ -120,10 +120,10 @@ export function registerCampaignCommands(program: Command): void {
         requireToken(context.token);
 
         const body = await resolveDataInput(options.data, options.file);
-        const response = await context.client.put<unknown>(ENDPOINTS.campaigns.updatePath(options.id), body);
+        const response = await context.client.put<unknown>(ENDPOINTS.affiliateNetworks.updatePath(options.id), body);
         await printJson(
           success({
-            campaign: response,
+            affiliateNetwork: response,
           }),
           getPrintOptions(command),
         );
@@ -132,17 +132,17 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  affiliateNetworks
     .command("delete")
-    .description("Delete a campaign")
-    .requiredOption("--id <id>", "Campaign ID")
+    .description("Delete an affiliate network")
+    .requiredOption("--id <id>", "Affiliate network ID")
     .action(async function action(this: Command, options: IdOptions) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.delete<unknown>(ENDPOINTS.campaigns.deletePath(options.id));
+        const response = await context.client.delete<unknown>(ENDPOINTS.affiliateNetworks.deletePath(options.id));
         await printJson(
           success({
             deleted: true,

@@ -25,34 +25,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function normalizeCampaignsResponse(payload: unknown): unknown {
+function normalizeLandersResponse(payload: unknown): unknown {
   if (Array.isArray(payload)) {
     return payload;
   }
 
-  if (isRecord(payload) && Array.isArray(payload.campaigns)) {
-    return payload.campaigns;
+  if (isRecord(payload) && Array.isArray(payload.landers)) {
+    return payload.landers;
   }
 
   return payload;
 }
 
-export function registerCampaignCommands(program: Command): void {
-  const campaigns = program.command("campaigns").description("Campaign operations");
+export function registerLanderCommands(program: Command): void {
+  const landers = program.command("landers").description("Lander operations");
 
-  campaigns
+  landers
     .command("list")
-    .description("List campaigns")
+    .description("List all landers")
     .action(async function action(this: Command) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.get<unknown>(ENDPOINTS.campaigns.listPath);
+        const response = await context.client.get<unknown>(ENDPOINTS.landers.listPath);
         await printJson(
           success({
-            campaigns: normalizeCampaignsResponse(response),
+            landers: normalizeLandersResponse(response),
           }),
           getPrintOptions(command),
         );
@@ -61,20 +61,20 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  landers
     .command("get")
-    .description("Get campaign by ID")
-    .requiredOption("--id <id>", "Campaign ID")
-    .action(async function action(this: Command, options: { id: string }) {
+    .description("Get lander by ID")
+    .requiredOption("--id <id>", "Lander ID")
+    .action(async function action(this: Command, options: IdOptions) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.get<unknown>(ENDPOINTS.campaigns.getPath(options.id));
+        const response = await context.client.get<unknown>(ENDPOINTS.landers.getPath(options.id));
         await printJson(
           success({
-            campaign: response,
+            lander: response,
           }),
           getPrintOptions(command),
         );
@@ -83,9 +83,9 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  landers
     .command("create")
-    .description("Create a new campaign")
+    .description("Create a new lander")
     .option("--data <json>", "JSON body string")
     .option("--file <path>", "Path to JSON file")
     .action(async function action(this: Command, options: DataOptions) {
@@ -95,10 +95,10 @@ export function registerCampaignCommands(program: Command): void {
         requireToken(context.token);
 
         const body = await resolveDataInput(options.data, options.file);
-        const response = await context.client.post<unknown>(ENDPOINTS.campaigns.createPath, body);
+        const response = await context.client.post<unknown>(ENDPOINTS.landers.createPath, body);
         await printJson(
           success({
-            campaign: response,
+            lander: response,
           }),
           getPrintOptions(command),
         );
@@ -107,10 +107,10 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  landers
     .command("update")
-    .description("Update an existing campaign")
-    .requiredOption("--id <id>", "Campaign ID")
+    .description("Update an existing lander")
+    .requiredOption("--id <id>", "Lander ID")
     .option("--data <json>", "JSON body string")
     .option("--file <path>", "Path to JSON file")
     .action(async function action(this: Command, options: IdDataOptions) {
@@ -120,10 +120,10 @@ export function registerCampaignCommands(program: Command): void {
         requireToken(context.token);
 
         const body = await resolveDataInput(options.data, options.file);
-        const response = await context.client.put<unknown>(ENDPOINTS.campaigns.updatePath(options.id), body);
+        const response = await context.client.put<unknown>(ENDPOINTS.landers.updatePath(options.id), body);
         await printJson(
           success({
-            campaign: response,
+            lander: response,
           }),
           getPrintOptions(command),
         );
@@ -132,17 +132,17 @@ export function registerCampaignCommands(program: Command): void {
       }
     });
 
-  campaigns
+  landers
     .command("delete")
-    .description("Delete a campaign")
-    .requiredOption("--id <id>", "Campaign ID")
+    .description("Delete a lander")
+    .requiredOption("--id <id>", "Lander ID")
     .action(async function action(this: Command, options: IdOptions) {
       const command = this;
       try {
         const context = await createCommandContext(command);
         requireToken(context.token);
 
-        const response = await context.client.delete<unknown>(ENDPOINTS.campaigns.deletePath(options.id));
+        const response = await context.client.delete<unknown>(ENDPOINTS.landers.deletePath(options.id));
         await printJson(
           success({
             deleted: true,
