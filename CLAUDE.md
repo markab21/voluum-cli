@@ -23,9 +23,9 @@ This repository hosts `voluum-cli`, a community-supported MIT-licensed CLI wrapp
 
 ### Entry Point & Command Structure
 
-`src/index.ts` sets up a Commander.js program with global options (`--baseUrl`, `--token`, `--pretty`, `--silent`, `--out`) and registers command groups: `auth`, `campaigns`, `reports`, `api`.
+`src/index.ts` sets up a Commander.js program with global options (`--baseUrl`, `--token`, `--json`, `--pretty`, `--silent`, `--out`) and registers command groups: `auth`, `campaigns`, `reports`, `api`.
 
-Each command group lives in `src/commands/`. All commands build a **CommandContext** via `buildCommandContext()` in `src/commands/helpers.ts` — this resolves global options, loads file config, applies the env/CLI/file precedence chain, and returns an authenticated `VoluumClient` instance ready to use.
+Each command group lives in `src/commands/`. All commands build a **CommandContext** via `createCommandContext()` in `src/commands/helpers.ts` — this resolves global options, loads file config, applies the env/CLI/file precedence chain, and returns an authenticated `VoluumClient` instance ready to use.
 
 ### Config & Auth
 
@@ -33,7 +33,7 @@ Config is stored at `~/.voluum-cli/config.json` (mode 0600). Precedence: CLI fla
 
 ### HTTP Client
 
-`src/client/VoluumClient.ts` provides typed `get<T>()`, `post<T>()`, `put<T>()`, `delete<T>()` methods. It automatically injects `cwauth-token` headers, builds query strings (with array support), and retries with exponential backoff on network errors, HTTP 429, and HTTP 5xx (up to 2 attempts by default).
+`src/client/VoluumClient.ts` provides typed `get<T>()`, `post<T>()`, `put<T>()`, `delete<T>()` methods. It automatically injects `cwauth-token` headers, builds query strings (with array support), and retries with exponential backoff on network errors, HTTP 429, and HTTP 5xx (up to 2 retries, 3 total attempts by default).
 
 ### Reports Module
 
@@ -46,7 +46,7 @@ The `reports breakdown` command uses preset query builders (offer, offer-by-camp
 
 ### Output Shape
 
-All commands emit JSON to stdout: `{ok: true, data: T}` on success or `{ok: false, error: CliError}` on failure. The `--pretty` flag indents output; `--silent` suppresses stdout; `--out <file>` writes to a file. Exit codes: 0 = success, 1 = expected error, 2 = unexpected error.
+All commands emit structured output to stdout in **TOON** (Token-Oriented Object Notation) by default — `{ok: true, data: T}` on success or `{ok: false, error: CliError}` on failure. Use `--json` for compact JSON, `--pretty` for pretty-printed JSON (implies `--json`). `--silent` suppresses stdout; `--out <file>` always writes full JSON to a file regardless of format. Exit codes: 0 = success, 1 = expected error, 2 = unexpected error.
 
 ### Error Handling
 

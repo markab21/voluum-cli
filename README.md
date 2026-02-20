@@ -14,7 +14,7 @@ bun run build
 Optional local link:
 
 ```bash
-npm link
+bun link
 ```
 
 Then use:
@@ -35,9 +35,12 @@ Global options (available for all commands):
 
 - `--baseUrl <url>` override API base URL
 - `--token <token>` override auth token
-- `--pretty` pretty JSON output
+- `--json` output as compact JSON (default is TOON — required when piping to `jq`)
+- `--pretty` output as pretty-printed JSON (implies `--json`)
 - `--silent` suppress stdout output
-- `--out <file>` write JSON output to file
+- `--out <file>` write full JSON output to file
+
+Default output format is **TOON** (Token-Oriented Object Notation), a compact human-readable format that is 30–60% smaller than JSON. Use `--json` or `--pretty` for JSON, or `--out` to save full JSON to a file.
 
 ### Auth
 
@@ -50,7 +53,7 @@ voluum auth login --email agent@example.com --password 'secret'
 Login with access keys:
 
 ```bash
-voluum auth login --accessId '...' --accessKey '...'
+voluum auth login --accessKeyId '...' --accessKey '...'
 ```
 
 Who am I:
@@ -100,12 +103,12 @@ voluum reports raw \
   --limit 100
 ```
 
-Query-first reporting:
+Flexible query (sorting, pagination, custom columns):
 
 ```bash
 voluum reports query \
   --path /report/conversions \
-  --query from=2026-02-01,to=2026-02-18,limit=100,offset=100,sort=visits:desc
+  --query from=2026-02-01,to=2026-02-18,limit=100,offset=100,sort=visits,direction=desc
 ```
 
 Schema introspection:
@@ -205,6 +208,7 @@ These were validated against a real Voluum account:
 - `from`/`to` must be rounded to the nearest hour (`HH:00:00Z`), otherwise Voluum returns `400 BAD_REQUEST`.
 - Use `--query-json` when any value contains commas (for example `columns` lists), because `--query` parses comma-separated `k=v` pairs.
 - For large accounts, small `limit` values can produce partial views; raise `limit` for full-window analysis before ranking campaigns.
+- Sort requires **two separate params**: `sort=<field>` and `direction=asc|desc`. The combined `sort=field:desc` syntax causes a `400 INVALID_QUERY` error.
 
 ## Development
 
