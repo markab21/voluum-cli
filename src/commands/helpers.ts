@@ -160,3 +160,32 @@ export function assertIsoDate(value: string, optionName: string): void {
 export function normalizePath(path: string): string {
   return ensureLeadingSlash(path.trim());
 }
+
+export async function readDataFile(filePath: string): Promise<unknown> {
+  const fs = await import("node:fs/promises");
+  const content = await fs.readFile(filePath, "utf-8");
+  try {
+    return JSON.parse(content);
+  } catch {
+    throw new Error(`Invalid JSON in file: ${filePath}`);
+  }
+}
+
+export async function resolveDataInput(
+  dataOption: string | undefined,
+  fileOption: string | undefined,
+): Promise<unknown> {
+  if (dataOption && fileOption) {
+    throw new Error("Use either --data or --file, not both.");
+  }
+
+  if (fileOption) {
+    return readDataFile(fileOption);
+  }
+
+  if (dataOption) {
+    return parseJsonBody(dataOption);
+  }
+
+  throw new Error("Either --data or --file is required.");
+}
